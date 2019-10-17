@@ -13,6 +13,16 @@
 
 # Add a Pool
   tasks:
+    - name: Create a monitor
+      bigip_monitor_gateway_icmp:
+        provider: "{{ provider }}"
+        name: gw1
+        adaptive: no
+        interval: 1
+        time_until_up: 0
+        timeout: 3
+      delegate_to: localhost
+
     - name: Create a Pool
       bigip_pool:
         provider: "{{provider}}"
@@ -23,15 +33,6 @@
         monitors:
           - http
           - gw1
-      delegate_to: localhost
-    - name: Create a monitor
-      bigip_monitor_gateway_icmp:
-        provider: "{{ provider }}"
-        name: gw1
-        adaptive: no
-        interval: 1
-        time_until_up: 0
-        timeout: 3
       delegate_to: localhost
     - name: Add members to pool
       bigip_pool_member:
@@ -65,8 +66,8 @@
         provider: "{{ provider }}"
         name: trunk1
         interfaces:
-          - 2.1
-          - 2.2
+          - 1.1
+          - 1.2
         link_selection_policy: maximum-bandwidth
         frame_distribution_hash: destination-mac
         #lacp_enabled: yes

@@ -1,0 +1,84 @@
+---
+- name: Remove a VIP, pool and pool members
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: 10.192.74.74
+      user: admin
+      validate_certs: no
+      server_port: 443
+
+# Add a Pool
+  tasks:
+    - name: Remove VIP
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        name: vip-1
+        state: absent
+      delegate_to: localhost
+    - name: Remove  members to pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        pool: web-pool
+        partition: Common
+        host: 100.100.100.2
+        name: web01
+        port: 80
+        state: absent
+      delegate_to: localhost
+    - name: Remove  members to pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        pool: web-pool
+        partition: Common
+        host: 100.100.100.3
+        name: web02
+        port: 80
+        state: absent
+      delegate_to: localhost
+    - name: Remove Pool
+      bigip_pool:
+        provider: "{{provider}}"
+        name: web-pool
+        state: absent
+      delegate_to: localhost
+    - name: Remove a monitor
+      bigip_monitor_gateway_icmp:
+        provider: "{{ provider }}"
+        name: gw1
+        state: absent
+      delegate_to: localhost
+    - name: Remove Self IP
+      bigip_selfip:
+        name: selfIPWebServer
+        state: absent
+        provider: "{{ provider }}"
+      delegate_to: localhost
+    - name: Remove Self IP
+      bigip_selfip:
+        name: selfIPClient
+        state: absent
+        provider: "{{ provider }}"
+      delegate_to: localhost
+    - name: Remove VLAN
+      bigip_vlan:
+        name: vlan30
+        state: absent
+        provider: "{{ provider }}"
+      delegate_to: localhost
+    - name: Remove VLAN
+      bigip_vlan:
+        name: vlan100
+        state: absent
+        provider: "{{ provider }}"
+      delegate_to: localhost
+    - name: Remove trunk
+      bigip_trunk:
+        provider: "{{ provider }}"
+        name: trunk1
+        state: absent
+      delegate_to: localhost
+
